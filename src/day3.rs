@@ -1,4 +1,4 @@
-use std::fs::read_to_string;
+use std::{collections::HashSet, fs::read_to_string};
 
 use crate::utils::get_input_file_name;
 
@@ -10,7 +10,7 @@ fn scan_number(line: &Vec<u8>, mut i: usize) -> usize {
 }
 
 fn is_symbol(character: u8) -> bool {
-    !character.is_ascii_digit() && character != b'.' && character != b'\n'
+    !character.is_ascii_digit() && character != b'.'
 }
 
 fn is_part_number(
@@ -62,8 +62,44 @@ fn is_part_number(
     false
 }
 
+fn extract_part_numbers_and_gears(
+    engine_schematic: &Vec<Vec<u8>>,
+) -> (Vec<PartNumber>, HashSet<(i64, i64)>) {
+    let mut part_numbers = Vec::<PartNumber>::new();
+    let mut gears = HashSet::<(i64, i64)>::new();
+
+    let mut row = 0;
+    while row < engine_schematic.len() {
+        let mut col = 0;
+        while col < engine_schematic[row].len() {
+            if engine_schematic[row][col].is_ascii_digit() {
+                let j = scan_number(&engine_schematic[row], col);
+                if is_part_number(&engine_schematic, row, col, j) {
+                    let num = String::from_utf8(engine_schematic[row][col..=j].to_vec())
+                        .unwrap()
+                        .parse::<i64>()
+                        .unwrap();
+                    part_numbers.push(PartNumber {
+                        num,
+                        line_num: row,
+                        num_start: col,
+                        num_end: j,
+                    });
+                }
+                col = j + 1;
+            } else if engine_schematic[row][col] == b'*' {
+                gears.insert((row as i64, col as i64));
+                col += 1;
+            } else {
+                col += 1;
+            }
+        }
+        row += 1;
+    }
+    (part_numbers, gears)
+}
+
 pub fn solve() {
-    let mut parts_sum: i64 = 0;
     let input_file_name = get_input_file_name(module_path!());
     let engine_schematic = read_to_string(format!("src/{}", input_file_name))
         .unwrap()
@@ -71,27 +107,55 @@ pub fn solve() {
         .map(|line| line.to_string().into_bytes())
         .collect::<Vec<Vec<u8>>>();
 
-    let mut line_num = 0;
-    while line_num < engine_schematic.len() {
-        let mut i = 0;
-        while i < engine_schematic[line_num].len() {
-            if engine_schematic[line_num][i].is_ascii_digit() {
-                let j = scan_number(&engine_schematic[line_num], i);
-                if is_part_number(&engine_schematic, line_num, i, j) {
-                    let num = String::from_utf8(engine_schematic[line_num][i..=j].to_vec())
-                        .unwrap()
-                        .parse::<i64>()
-                        .unwrap();
-                    parts_sum += num;
-                }
-                i = j + 1;
+    let (part_numbers, gears) = extract_part_numbers_and_gears(&engine_schematic);
+
+    let parts_sum: i64 = part_numbers.iter().map(|pn| pn.num).sum();
+    println!("module: {}, part 1, result: {}", module_path!(), parts_sum);
+
+    let gear_ratios_sum: i64 = gears
+        .iter()
+        .filter_map(|gear| {
+            let neigbours = part_numbers
+                .iter()
+                .filter(|pn| pn.to_owned().adjacent_cells().contains(gear))
+                .collect::<Vec<&PartNumber>>();
+            if neigbours.len() == 2 {
+                Some(neigbours[0].num * neigbours[1].num)
             } else {
-                i += 1;
+                None
             }
-        }
-        line_num += 1;
+        })
+        .sum();
+    println!(
+        "module: {}, part 2, result: {}",
+        module_path!(),
+        gear_ratios_sum
+    );
+}
+
+#[derive(Copy, Clone, Debug)]
+struct PartNumber {
+    num: i64,
+    line_num: usize,
+    num_start: usize,
+    num_end: usize,
+}
+
+impl PartNumber {
+    fn adjacent_cells(self) -> HashSet<(i64, i64)> {
+        let mut res = HashSet::new();
+        res.insert((self.line_num as i64, self.num_start as i64 - 1));
+        res.insert((self.line_num as i64, self.num_end as i64 + 1));
+        let previuos_line_cells = (self.num_start as i64 - 1..=self.num_end as i64 + 1)
+            .map(|i| (self.line_num as i64 - 1, i))
+            .collect::<HashSet<(i64, i64)>>();
+        res.extend(previuos_line_cells);
+        let next_line_cells = (self.num_start as i64 - 1..=self.num_end as i64 + 1)
+            .map(|i| (self.line_num as i64 + 1, i))
+            .collect::<HashSet<(i64, i64)>>();
+        res.extend(next_line_cells);
+        res
     }
-    println!("module: {}, result: {}", module_path!(), parts_sum);
 }
 
 #[test]
@@ -103,7 +167,6 @@ fn test_scan_number() {
 #[test]
 fn test_is_symbol() {
     assert_eq!(is_symbol(b'.'), false);
-    assert_eq!(is_symbol(b'\n'), false);
     assert_eq!(is_symbol(b'1'), false);
     assert_eq!(is_symbol(b' '), true);
     assert_eq!(is_symbol(b'='), true);
