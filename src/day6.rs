@@ -14,14 +14,29 @@ fn parse_line(line: &str) -> Vec<i64> {
 }
 
 fn num_ways_to_win(time: i64, distance: i64) -> i64 {
-    (1..time).fold(0, |acc, i| {
-        let travel_distance = time - i;
-        if i * travel_distance > distance {
-            acc + 1
-        } else {
-            acc
-        }
-    })
+    // t (time)
+    // r (record)
+    // h (hold time) 0..t
+    // h * (t - h) > r
+    // ht - h^2 > r
+    // ht - h^2 - r > 0
+    // - h^2 + th - r > 0
+    // this is a quadratic formula that follows this equation  ax^2 + bx + c = 0
+    // we need to solve for x
+    let a = -1f64;
+    let b = time as f64;
+    let c = -distance as f64;
+    let mut first_solution = ((-b + (b * b - 4. * a * c).sqrt()) / 2. * a).ceil();
+    let mut second_solution = ((-b - (b * b - 4. * a * c).sqrt()) / 2. * a).floor();
+    // now since we need to solve for > 0 not = 0, which means our solutions shouldn't be equal to
+    // distance record;
+    if first_solution * (b - first_solution) == distance as f64 {
+        first_solution += 1.;
+    }
+    if second_solution * (b - second_solution) == distance as f64 {
+        second_solution -= 1.;
+    }
+    (second_solution - first_solution) as i64 + 1
 }
 
 pub fn solve() -> Result<(), Error> {
