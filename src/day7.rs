@@ -28,7 +28,7 @@ impl HandType {
             if let Some(num_j) = group.clone().get(&Card::Joker) {
                 if *num_j < 5 {
                     group.retain(|k, _| **k != Card::Joker);
-                    let max_card = group.iter().max_by(|a, b| a.1.cmp(&b.1)).unwrap().0;
+                    let max_card = group.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap().0;
                     group.entry(*max_card).and_modify(|v| *v += num_j);
                 }
             }
@@ -114,8 +114,7 @@ impl Hand {
         let cards: Vec<Card> = cards_str
             .chars()
             .map(|c| Card::from_char(c, has_wild_card))
-            .collect::<Vec<Card>>()
-            .into();
+            .collect::<Vec<Card>>();
 
         Hand {
             cards: cards.clone(),
@@ -132,7 +131,7 @@ pub fn solve() -> Result<(), Error> {
     let mut hands: Vec<Hand> = contents
         .lines()
         .map(|line| {
-            let (cards, bid) = line.split_once(" ").unwrap();
+            let (cards, bid) = line.split_once(' ').unwrap();
             let bid = bid.parse::<i64>().unwrap();
             Hand::new(cards.to_string(), bid, false)
         })
@@ -147,7 +146,7 @@ pub fn solve() -> Result<(), Error> {
     let mut hands_with_wc: Vec<Hand> = contents
         .lines()
         .map(|line| {
-            let (cards, bid) = line.split_once(" ").unwrap();
+            let (cards, bid) = line.split_once(' ').unwrap();
             let bid = bid.parse::<i64>().unwrap();
             Hand::new(cards.to_string(), bid, true)
         })

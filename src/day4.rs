@@ -3,17 +3,17 @@ use std::{collections::HashSet, fs::read_to_string};
 use crate::utils::get_input_file_name;
 
 fn card_matches(card: &str) -> usize {
-    let numbers_str = card.split(":").collect::<Vec<&str>>()[1].trim();
-    let numbers_parts = numbers_str.split("|").collect::<Vec<&str>>();
+    let numbers_str = card.split(':').collect::<Vec<&str>>()[1].trim();
+    let numbers_parts = numbers_str.split('|').collect::<Vec<&str>>();
     let my_numbers = numbers_parts[1]
         .trim()
-        .split(" ")
+        .split(' ')
         .filter_map(|n| n.parse::<i64>().ok())
         .collect::<HashSet<i64>>();
 
     numbers_parts[0]
         .trim()
-        .split(" ")
+        .split(' ')
         .filter_map(|n| n.parse::<i64>().ok())
         .filter(|n| my_numbers.contains(n))
         .collect::<HashSet<i64>>()
@@ -41,7 +41,7 @@ pub fn solve() {
 
     for i in 0..cards.len() {
         for j in i + 1..=i + cards[i].matches {
-            cards[j].num += 1 * cards[i].num;
+            cards[j].num += cards[i].num;
         }
     }
     let total_cards: i64 = cards.iter().map(|c| c.num).sum();

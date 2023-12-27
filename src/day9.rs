@@ -28,7 +28,7 @@ pub fn solve() -> Result<(), Error> {
     let solution: (i64, i64) = contents
         .lines()
         .map(|line| {
-            let nums: Vec<i64> = line.split(" ").map(|t| t.parse().unwrap()).collect();
+            let nums: Vec<i64> = line.split(' ').map(|t| t.parse().unwrap()).collect();
             solve_history(nums)
         })
         .fold((0, 0), |(acc_first, acc_last), (first, last)| {

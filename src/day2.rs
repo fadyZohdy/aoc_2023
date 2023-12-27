@@ -19,19 +19,19 @@ const BLUE_CUBES: i64 = 14;
 
 // Game 6: 8 blue, 1 red, 17 green; 7 blue; 10 green, 6 blue; 5 blue, 1 red, 11 green
 fn parse_line(line: &str) -> Game {
-    let parts = line.split(":").collect::<Vec<&str>>();
-    let game_part = parts[0].split(" ").collect::<Vec<&str>>();
+    let parts = line.split(':').collect::<Vec<&str>>();
+    let game_part = parts[0].split(' ').collect::<Vec<&str>>();
     let game_id = game_part[1].trim().parse::<i64>().unwrap();
 
-    let sets = parts[1].split(";").map(|set_string| {
-        let set_parts = set_string.split(",").collect::<Vec<&str>>();
+    let sets = parts[1].split(';').map(|set_string| {
+        let set_parts = set_string.split(',').collect::<Vec<&str>>();
         let mut set = Set {
             green: 0,
             blue: 0,
             red: 0,
         };
         for set_part in set_parts {
-            let set_part_parts = set_part.trim().split(" ").collect::<Vec<&str>>();
+            let set_part_parts = set_part.trim().split(' ').collect::<Vec<&str>>();
             let number = set_part_parts[0].parse::<i64>().unwrap();
             let color = set_part_parts[1].trim();
             match color {

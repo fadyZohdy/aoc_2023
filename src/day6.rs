@@ -6,9 +6,9 @@ use std::io::Error;
 // Distance:  9  40  200
 
 fn parse_line(line: &str) -> Vec<i64> {
-    line.split(":")
+    line.split(':')
         .nth(1)
-        .map(|s| s.split(" ").filter_map(|token| token.parse::<i64>().ok()))
+        .map(|s| s.split(' ').filter_map(|token| token.parse::<i64>().ok()))
         .expect("malformed line")
         .collect::<Vec<i64>>()
 }
@@ -44,8 +44,7 @@ pub fn solve() -> Result<(), Error> {
     let contents = read_to_string(format!("src/{}", input_file_name))?;
 
     let times = contents
-        .lines()
-        .nth(0)
+        .lines().next()
         .map(parse_line)
         .expect("malformed input");
     let distances = contents

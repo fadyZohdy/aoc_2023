@@ -74,7 +74,7 @@ fn extract_part_numbers_and_gears(
         while col < engine_schematic[row].len() {
             if engine_schematic[row][col].is_ascii_digit() {
                 let j = scan_number(&engine_schematic[row], col);
-                if is_part_number(&engine_schematic, row, col, j) {
+                if is_part_number(engine_schematic, row, col, j) {
                     let num = String::from_utf8(engine_schematic[row][col..=j].to_vec())
                         .unwrap()
                         .parse::<i64>()
@@ -166,48 +166,48 @@ fn test_scan_number() {
 
 #[test]
 fn test_is_symbol() {
-    assert_eq!(is_symbol(b'.'), false);
-    assert_eq!(is_symbol(b'1'), false);
-    assert_eq!(is_symbol(b' '), true);
-    assert_eq!(is_symbol(b'='), true);
-    assert_eq!(is_symbol(b'('), true);
-    assert_eq!(is_symbol(b')'), true);
-    assert_eq!(is_symbol(b'['), true);
-    assert_eq!(is_symbol(b']'), true);
-    assert_eq!(is_symbol(b'{'), true);
-    assert_eq!(is_symbol(b'}'), true);
-    assert_eq!(is_symbol(b','), true);
-    assert_eq!(is_symbol(b';'), true);
-    assert_eq!(is_symbol(b':'), true);
-    assert_eq!(is_symbol(b'!'), true);
-    assert_eq!(is_symbol(b'?'), true);
-    assert_eq!(is_symbol(b'@'), true);
-    assert_eq!(is_symbol(b'#'), true);
-    assert_eq!(is_symbol(b'$'), true);
-    assert_eq!(is_symbol(b'%'), true);
-    assert_eq!(is_symbol(b'^'), true);
-    assert_eq!(is_symbol(b'&'), true);
-    assert_eq!(is_symbol(b'*'), true);
-    assert_eq!(is_symbol(b'_'), true);
-    assert_eq!(is_symbol(b'-'), true);
-    assert_eq!(is_symbol(b'+'), true);
-    assert_eq!(is_symbol(b'='), true);
-    assert_eq!(is_symbol(b'<'), true);
-    assert_eq!(is_symbol(b'>'), true);
-    assert_eq!(is_symbol(b'/'), true);
-    assert_eq!(is_symbol(b'\\'), true);
-    assert_eq!(is_symbol(b'|'), true);
-    assert_eq!(is_symbol(b'~'), true);
-    assert_eq!(is_symbol(b'`'), true);
-    assert_eq!(is_symbol(b'\''), true);
-    assert_eq!(is_symbol(b'"'), true);
-    assert_eq!(is_symbol(b' '), true);
-    assert_eq!(is_symbol(b'.'), false);
-    assert_eq!(is_symbol(b'0'), false);
-    assert_eq!(is_symbol(b'9'), false);
-    assert_eq!(is_symbol(b'A'), true);
-    assert_eq!(is_symbol(b'Z'), true);
-    assert_eq!(is_symbol(b'a'), true);
+    assert!(!is_symbol(b'.'));
+    assert!(!is_symbol(b'1'));
+    assert!(is_symbol(b' '));
+    assert!(is_symbol(b'='));
+    assert!(is_symbol(b'('));
+    assert!(is_symbol(b')'));
+    assert!(is_symbol(b'['));
+    assert!(is_symbol(b']'));
+    assert!(is_symbol(b'{'));
+    assert!(is_symbol(b'}'));
+    assert!(is_symbol(b','));
+    assert!(is_symbol(b';'));
+    assert!(is_symbol(b':'));
+    assert!(is_symbol(b'!'));
+    assert!(is_symbol(b'?'));
+    assert!(is_symbol(b'@'));
+    assert!(is_symbol(b'#'));
+    assert!(is_symbol(b'$'));
+    assert!(is_symbol(b'%'));
+    assert!(is_symbol(b'^'));
+    assert!(is_symbol(b'&'));
+    assert!(is_symbol(b'*'));
+    assert!(is_symbol(b'_'));
+    assert!(is_symbol(b'-'));
+    assert!(is_symbol(b'+'));
+    assert!(is_symbol(b'='));
+    assert!(is_symbol(b'<'));
+    assert!(is_symbol(b'>'));
+    assert!(is_symbol(b'/'));
+    assert!(is_symbol(b'\\'));
+    assert!(is_symbol(b'|'));
+    assert!(is_symbol(b'~'));
+    assert!(is_symbol(b'`'));
+    assert!(is_symbol(b'\''));
+    assert!(is_symbol(b'"'));
+    assert!(is_symbol(b' '));
+    assert!(!is_symbol(b'.'));
+    assert!(!is_symbol(b'0'));
+    assert!(!is_symbol(b'9'));
+    assert!(is_symbol(b'A'));
+    assert!(is_symbol(b'Z'));
+    assert!(is_symbol(b'a'));
 }
 
 #[test]
@@ -224,23 +224,23 @@ fn test_is_part_number() {
         "...$.*....".to_string().into_bytes(),
         ".664.598..".to_string().into_bytes(),
     ];
-    assert_eq!(is_part_number(&input, 0, 1, 4), true);
-    assert_eq!(is_part_number(&input, 0, 6, 9), false);
-    assert_eq!(is_part_number(&input, 2, 2, 3), true);
-    assert_eq!(is_part_number(&input, 2, 6, 8), true);
-    assert_eq!(is_part_number(&input, 4, 0, 2), true);
-    assert_eq!(is_part_number(&input, 5, 7, 8), false);
-    assert_eq!(is_part_number(&input, 6, 2, 4), true);
-    assert_eq!(is_part_number(&input, 7, 6, 8), true);
-    assert_eq!(is_part_number(&input, 9, 1, 3), true);
-    assert_eq!(is_part_number(&input, 9, 5, 7), true);
+    assert!(is_part_number(&input, 0, 1, 4));
+    assert!(!is_part_number(&input, 0, 6, 9));
+    assert!(is_part_number(&input, 2, 2, 3));
+    assert!(is_part_number(&input, 2, 6, 8));
+    assert!(is_part_number(&input, 4, 0, 2));
+    assert!(!is_part_number(&input, 5, 7, 8));
+    assert!(is_part_number(&input, 6, 2, 4));
+    assert!(is_part_number(&input, 7, 6, 8));
+    assert!(is_part_number(&input, 9, 1, 3));
+    assert!(is_part_number(&input, 9, 5, 7));
 
     let input = vec![
         "...#.".to_string().into_bytes(),
         "537..".to_string().into_bytes(),
         ".....".to_string().into_bytes(),
     ];
-    assert_eq!(is_part_number(&input, 1, 0, 2), true);
+    assert!(is_part_number(&input, 1, 0, 2));
 
     let input = vec![
         ".........".to_string().into_bytes(),
@@ -248,5 +248,5 @@ fn test_is_part_number() {
         ".....@...".to_string().into_bytes(),
         "968......".to_string().into_bytes(),
     ];
-    assert_eq!(is_part_number(&input, 1, 6, 8), true);
+    assert!(is_part_number(&input, 1, 6, 8));
 }

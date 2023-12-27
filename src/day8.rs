@@ -22,7 +22,7 @@ impl From<char> for Instruction {
 }
 
 fn solve_part_1(
-    instructions: &Vec<Instruction>,
+    instructions: &[Instruction],
     network: &HashMap<String, (String, String)>,
 ) -> usize {
     let mut current_node = "AAA";
@@ -42,13 +42,10 @@ fn solve_part_1(
     steps
 }
 
-fn solve_part_2(
-    instructions: &Vec<Instruction>,
-    network: &HashMap<String, (String, String)>,
-) -> i64 {
+fn solve_part_2(instructions: &[Instruction], network: &HashMap<String, (String, String)>) -> i64 {
     network
         .keys()
-        .filter(|k| k.ends_with("A"))
+        .filter(|k| k.ends_with('A'))
         .map(|node| {
             let mut seen: HashMap<&String, i64> = HashMap::new();
             let mut current_node = node;
@@ -60,7 +57,7 @@ fn solve_part_2(
                     Instruction::Left => l,
                     Instruction::Right => r,
                 };
-                if current_node.ends_with("Z") {
+                if current_node.ends_with('Z') {
                     // make sure this is indeed the last end node in the chain by going through the
                     // same chain again.
                     if let Some(v) = seen.get(current_node) {
@@ -75,7 +72,7 @@ fn solve_part_2(
             }
             steps
         })
-        .fold(1, |acc, x| lcm(acc, x))
+        .fold(1, lcm)
 }
 
 pub fn solve() -> Result<(), Error> {

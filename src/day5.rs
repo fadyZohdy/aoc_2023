@@ -40,7 +40,7 @@ fn parse_seeds(line: &str) -> Vec<i64> {
     line.split(": ")
         .last()
         .unwrap()
-        .split(" ")
+        .split(' ')
         .map(|num| num.to_string().trim().parse::<i64>().unwrap())
         .collect::<Vec<i64>>()
 }
@@ -48,12 +48,12 @@ fn parse_seeds(line: &str) -> Vec<i64> {
 fn parse_mapping(chunk: &str) -> (&str, &str, Vec<Entry>) {
     let source_to_dist = chunk
         .lines()
-        .nth(0)
+        .next()
         .unwrap()
-        .split(" ")
-        .nth(0)
+        .split(' ')
+        .next()
         .unwrap()
-        .split("-")
+        .split('-')
         .collect::<Vec<&str>>();
     let source = source_to_dist[0];
     let dist = source_to_dist[2];
@@ -63,7 +63,7 @@ fn parse_mapping(chunk: &str) -> (&str, &str, Vec<Entry>) {
         .skip(1)
         .map(|line| {
             let nums = line
-                .split(" ")
+                .split(' ')
                 .map(|n| n.to_string().parse::<i64>().unwrap())
                 .collect::<Vec<i64>>();
             Entry {
@@ -83,8 +83,7 @@ fn traverse_mappings(
 ) -> i64 {
     let mut result = starting_value;
     let mut current_src = starting_src;
-    while let Some(((_, dist), entries)) =
-        mappings.iter().find(|((src, _), _)| src == &current_src)
+    while let Some(((_, dist), entries)) = mappings.iter().find(|((src, _), _)| src == &current_src)
     {
         if let Some(value) = entries
             .iter()
@@ -107,10 +106,7 @@ fn reverse_traverse_mappings(
     while let Some(((src, _), entries)) =
         mappings.iter().find(|((_, dist), _)| dist == &current_dist)
     {
-        if let Some(value) = entries
-            .iter()
-            .find_map(|entry| entry.get_src_value(result))
-        {
+        if let Some(value) = entries.iter().find_map(|entry| entry.get_src_value(result)) {
             result = value;
         }
         current_dist = src;
@@ -118,21 +114,21 @@ fn reverse_traverse_mappings(
     result
 }
 
-fn solve_part_1(seeds: &Vec<i64>, mappings: &HashMap<(&str, &str), Vec<Entry>>) -> i64 {
+fn solve_part_1(seeds: &[i64], mappings: &HashMap<(&str, &str), Vec<Entry>>) -> i64 {
     let mut location: i64 = i64::MAX;
     for seed in seeds.iter() {
-        location = location.min(traverse_mappings("seed", *seed, &mappings));
+        location = location.min(traverse_mappings("seed", *seed, mappings));
     }
     location
 }
 
-fn solve_part_2(seeds: &Vec<i64>, mappings: &HashMap<(&str, &str), Vec<Entry>>) -> Option<i64> {
+fn solve_part_2(seeds: &[i64], mappings: &HashMap<(&str, &str), Vec<Entry>>) -> Option<i64> {
     let seed_ranges = seeds
         .chunks(2)
         .map(|chunk| chunk[0]..chunk[0] + chunk[1])
         .collect::<Vec<_>>();
     for location in 1..=999_000_000 {
-        let seed = reverse_traverse_mappings("location", location, &mappings);
+        let seed = reverse_traverse_mappings("location", location, mappings);
         for range in seed_ranges.iter() {
             if range.contains(&seed) {
                 return Some(location);
@@ -149,7 +145,7 @@ pub fn solve() -> Result<(), Error> {
 
     let seeds: Vec<i64> = contents
         .lines()
-        .nth(0)
+        .next()
         .map(parse_seeds)
         .expect("seeds not on first line");
 

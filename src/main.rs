@@ -10,10 +10,10 @@ mod day9;
 mod utils;
 
 pub fn main() {
-    let _ = day1::solve();
-    let _ = day2::solve();
-    let _ = day3::solve();
-    let _ = day4::solve();
+    day1::solve();
+    day2::solve();
+    day3::solve();
+    day4::solve();
     let _ = day5::solve();
     let _ = day6::solve();
     let _ = day7::solve();
